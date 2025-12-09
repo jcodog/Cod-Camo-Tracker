@@ -4,7 +4,7 @@ This repository is **Cod Camo Tracker**, a web app to track Call of Duty weapon 
 
 High level:
 
-- Frontend: Next.js App Router (v15+), fully typed TypeScript, deployed on Vercel.
+- Frontend: Next.js App Router (v16+), fully typed TypeScript, deployed on Vercel.
 - Backend: Hono app hosted through JStack, mounted under the Next.js app as API route handlers.
 - Auth: BetterAuth + Prisma adapter, with roles: `USER`, `STAFF`, `ADMIN`.
 - Database: Neon Postgres with Prisma ORM and Prisma Accelerate extension.
