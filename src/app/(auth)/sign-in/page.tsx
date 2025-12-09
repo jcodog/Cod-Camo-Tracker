@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function SignInPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-950 text-white">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,_rgba(45,212,191,0.15),_transparent_60%)]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(45,212,191,0.15),transparent_60%)]" />
       <section className="w-full max-w-md space-y-6 rounded-3xl border border-white/10 bg-slate-900/60 p-8 backdrop-blur">
         <div className="space-y-2 text-center">
           <p className="text-xs uppercase tracking-[0.4em] text-slate-400">

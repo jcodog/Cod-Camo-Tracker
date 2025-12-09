@@ -11,7 +11,7 @@ const navLinks = [
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
     <div className="relative min-h-screen bg-[#05070f] text-slate-100">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(90,123,255,0.18),_transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(90,123,255,0.18),transparent_55%)]" />
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-8">
         <header className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/40 backdrop-blur">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
