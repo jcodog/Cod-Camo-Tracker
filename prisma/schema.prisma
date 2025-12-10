@@ -8,6 +8,13 @@ datasource db {
   provider = "postgresql"
 }
 
+enum GameMode {
+  CAMPAIGN
+  MULTIPLAYER
+  ZOMBIES
+  WARZONE
+}
+
 model Weapon {
   id        String @id @default(cuid())
   name      String
@@ -15,10 +22,26 @@ model Weapon {
   codTitle  String
   sortOrder Int    @default(0)
 
+  challenges CamoChallenge[]
+
   @@unique([name, codTitle])
   @@index([category])
   @@index([name])
   @@map("weapon")
+}
+
+model CamoChallenge {
+  id          String   @id @default(cuid())
+  weaponId    String
+  name        String
+  mode        GameMode
+  description String?
+  sortOrder   Int      @default(0)
+
+  weapon Weapon @relation(fields: [weaponId], references: [id], onDelete: Cascade)
+
+  @@index([weaponId])
+  @@map("camo_challenge")
 }
 
 model User {
