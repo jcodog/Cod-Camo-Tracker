@@ -1,6 +1,7 @@
 import { j } from "./jstack";
 import { postRouter } from "./routers/post-router";
 import { healthRouter } from "./routers/health-router";
+import { weaponRouter } from "./routers/weapon-router";
 
 /**
  * This is your base API.
@@ -21,6 +22,7 @@ const api = j
 const appRouter = j.mergeRouters(api, {
   post: postRouter,
   health: healthRouter,
+  weapon: weaponRouter,
 });
 
 export type AppRouter = typeof appRouter;
