@@ -2,12 +2,12 @@ import Link from "next/link";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SignUpForm } from "@/components/auth/sign-up-form";
 
-export default function SignUpPage({
+export default async function SignUpPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<{ redirect?: string }>;
 }) {
-  const redirect = searchParams?.redirect;
+  const redirect = (await searchParams)?.redirect;
   const redirectParam =
     typeof redirect === "string" && redirect.length > 0
       ? `?redirect=${encodeURIComponent(redirect)}`
