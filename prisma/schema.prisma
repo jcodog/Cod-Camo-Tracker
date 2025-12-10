@@ -8,6 +8,19 @@ datasource db {
   provider = "postgresql"
 }
 
+model Weapon {
+  id        String @id @default(cuid())
+  name      String
+  category  String
+  codTitle  String
+  sortOrder Int    @default(0)
+
+  @@unique([name, codTitle])
+  @@index([category])
+  @@index([name])
+  @@map("weapon")
+}
+
 model User {
   id            String    @id
   name          String
