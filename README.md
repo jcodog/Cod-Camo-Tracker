@@ -1,5 +1,7 @@
 # Cod Camo Tracker
 
+The opensource Call Of Duty Camo Tracking application.
+
 ## Design Diagrams
 
 - [Architecture](design/markdown/architecture.md)
