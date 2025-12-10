@@ -120,6 +120,21 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
+  // Require admin role for /admin routes
+  if (pathname.startsWith("/admin")) {
+    const session = await ensureAuthoritativeSession();
+    const role = session?.user?.role;
+    if (!session?.user) {
+      const target = req.nextUrl.pathname + req.nextUrl.search;
+      const signInUrl = new URL("/sign-in", req.url);
+      signInUrl.searchParams.set("redirect", target);
+      return NextResponse.redirect(signInUrl);
+    }
+    if (role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
