@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +28,8 @@ type SignInValues = z.infer<typeof signInSchema>;
 
 export function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams?.get("redirect") || "/dashboard";
   const [pending, setPending] = useState(false);
   const form = useForm<SignInValues>({
     resolver: zodResolver(signInSchema),
@@ -43,7 +45,7 @@ export function SignInForm() {
       const { error, data } = await authClient.signIn.email({
         email: values.email,
         password: values.password,
-        callbackURL: "/dashboard",
+        callbackURL: redirectTo,
       });
 
       if (error) {
@@ -52,7 +54,7 @@ export function SignInForm() {
       }
 
       toast.success(`Welcome back, ${data.user.name ?? "operator"}.`);
-      router.push("/dashboard");
+      router.push(redirectTo);
       router.refresh();
     } catch (err) {
       toast.error(

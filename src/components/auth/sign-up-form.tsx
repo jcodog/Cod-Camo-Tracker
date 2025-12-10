@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +47,8 @@ type SignUpValues = z.infer<typeof signUpSchema>;
 
 export function SignUpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams?.get("redirect") || "/dashboard";
   const [pending, setPending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [step, setStep] = useState<"form" | "verify">("form");
@@ -72,7 +74,7 @@ export function SignUpForm() {
         name: values.name,
         email: values.email,
         password: values.password,
-        callbackURL: "/dashboard",
+        callbackURL: redirectTo,
       });
 
       if (error) {
@@ -107,7 +109,7 @@ export function SignUpForm() {
       }
 
       toast.success("Email verified. Redirecting…");
-      router.push("/dashboard");
+      router.push(redirectTo);
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Verification failed");

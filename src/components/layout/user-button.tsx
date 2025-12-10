@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,11 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { authClient } from "@/lib/auth-client";
 
 function initials(name?: string | null, email?: string | null) {
   if (name && name.trim().length > 0) {
@@ -35,6 +34,15 @@ type UserButtonProps = {
 
 export function UserButton({ name, email, roleLinks }: UserButtonProps) {
   const display = name || "User";
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut();
+      window.location.href = "/sign-in";
+    } catch (err) {
+      console.error("Failed to sign out", err);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -59,8 +67,8 @@ export function UserButton({ name, email, roleLinks }: UserButtonProps) {
         <DropdownMenuItem asChild>
           <Link href="/account">Profile & settings</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild variant="destructive">
-          <Link href="/api/auth/sign-out">Sign out</Link>
+        <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
+          Sign out
         </DropdownMenuItem>
         {roleLinks.length > 0 && (
           <>
