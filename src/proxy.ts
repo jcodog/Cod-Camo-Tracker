@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCookieCache } from "better-auth/cookies";
 import { auth } from "@/lib/auth";
 
 // Known crawler/AI user agents we want to block broadly
@@ -74,68 +73,33 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Optimistic cookie-based check
-  let cookieSession = (await getCookieCache(req)) as {
-    session?: { id: string };
-  } | null;
-
-  let authoritativeSession:
-    | Awaited<ReturnType<typeof auth.api.getSession>>
-    | null
-    | undefined;
-
-  const ensureAuthoritativeSession = async () => {
-    if (authoritativeSession !== undefined) {
-      return authoritativeSession;
-    }
-    try {
-      authoritativeSession = await auth.api.getSession({
-        headers: req.headers,
-      });
-    } catch {
-      authoritativeSession = null;
-    }
-    return authoritativeSession;
-  };
-
-  // If cookie cache missing, attempt an authoritative lightweight session fetch once.
-  // (This helps immediately after OAuth callback when cookies were just set.)
-  if (!cookieSession) {
-    const full = await ensureAuthoritativeSession();
-    if (full) {
-      cookieSession = { session: { id: full.session.id } };
-    }
+  // Authoritative session check once for protected routes
+  let session: Awaited<ReturnType<typeof auth.api.getSession>> | null = null;
+  try {
+    session = await auth.api.getSession({
+      headers: req.headers,
+    });
+  } catch {
+    session = null;
   }
 
-  if (!cookieSession) {
-    const isAuthPage =
-      pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
-    const isAuthCallback = pathname.startsWith("/api/auth/");
-    if (isAuthPage || isAuthCallback) {
-      return NextResponse.next();
-    }
+  if (!session?.user) {
     const target = req.nextUrl.pathname + req.nextUrl.search;
     const signInUrl = new URL("/sign-in", req.url);
     signInUrl.searchParams.set("redirect", target);
     return NextResponse.redirect(signInUrl);
   }
 
+  const role = session.user.role;
+
   // Require admin role for /admin routes
-  if (pathname.startsWith("/admin")) {
-    const session = await ensureAuthoritativeSession();
-    const role = session?.user?.role;
-    if (role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
+  if (pathname.startsWith("/admin") && role !== "admin") {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // Require staff or admin for /staff routes
-  if (pathname.startsWith("/staff")) {
-    const session = await ensureAuthoritativeSession();
-    const role = session?.user?.role;
-    if (role !== "staff" && role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
+  if (pathname.startsWith("/staff") && role !== "staff" && role !== "admin") {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   return NextResponse.next();
