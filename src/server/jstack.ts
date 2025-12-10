@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { getDb } from "@/lib/db/prisma";
 import { env } from "hono/adapter";
 import { HTTPException } from "hono/http-exception";
@@ -22,7 +23,20 @@ const baseMiddleware = j.middleware(async ({ c, next }) => {
 
   const db = getDb(DATABASE_URL);
 
-  return await next({ db });
+  return await next({
+    db,
+  });
+});
+
+const authMiddleware = j.middleware(async ({ c, next }) => {
+  const session = await auth.api.getSession({
+    headers: c.req.raw.headers,
+  });
+
+  return await next({
+    authSession: session?.session ?? null,
+    authUser: session?.user ?? null,
+  });
 });
 
 /**
@@ -31,3 +45,5 @@ const baseMiddleware = j.middleware(async ({ c, next }) => {
  * This is the base piece you use to build new queries and mutations on your API.
  */
 export const publicProcedure = j.procedure.use(baseMiddleware);
+
+export const protectedProcedure = publicProcedure.use(authMiddleware);
