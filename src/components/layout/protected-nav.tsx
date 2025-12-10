@@ -100,11 +100,11 @@ export function ProtectedNav() {
     const shortcuts =
       role === "admin"
         ? [
-            { href: "/admin/weapons/new", label: "Add Weapon" },
             { href: "/admin", label: "Admin Dashboard" },
+            { href: "/staff", label: "Staff Dashboard" },
           ]
         : role === "staff"
-        ? [{ href: "/support", label: "Staff Support" }]
+        ? [{ href: "/staff", label: "Staff Dashboard" }]
         : [];
 
     return { navLinks: nav, title: computedTitle, roleLinks: shortcuts };
