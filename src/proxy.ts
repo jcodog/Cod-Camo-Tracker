@@ -124,13 +124,16 @@ export async function proxy(req: NextRequest) {
   if (pathname.startsWith("/admin")) {
     const session = await ensureAuthoritativeSession();
     const role = session?.user?.role;
-    if (!session?.user) {
-      const target = req.nextUrl.pathname + req.nextUrl.search;
-      const signInUrl = new URL("/sign-in", req.url);
-      signInUrl.searchParams.set("redirect", target);
-      return NextResponse.redirect(signInUrl);
-    }
     if (role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  }
+
+  // Require staff or admin for /staff routes
+  if (pathname.startsWith("/staff")) {
+    const session = await ensureAuthoritativeSession();
+    const role = session?.user?.role;
+    if (role !== "staff" && role !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   }
