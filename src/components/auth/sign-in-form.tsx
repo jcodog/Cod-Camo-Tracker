@@ -40,7 +40,7 @@ export function SignInForm() {
   const handleSubmit = async (values: SignInValues) => {
     setPending(true);
     try {
-      const { error } = await authClient.signIn.email({
+      const { error, data } = await authClient.signIn.email({
         email: values.email,
         password: values.password,
         callbackURL: "/dashboard",
@@ -51,7 +51,7 @@ export function SignInForm() {
         return;
       }
 
-      toast.success("Welcome back, operator.");
+      toast.success(`Welcome back, ${data.user.name ?? "operator"}.`);
       router.push("/dashboard");
       router.refresh();
     } catch (err) {

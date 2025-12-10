@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { RecentPost } from "@/components/post";
+import { OtpTest } from "@/components/test-otp";
 
 export default async function Home() {
   return (
@@ -25,6 +26,9 @@ export default async function Home() {
         </p>
 
         <RecentPost />
+      </div>
+      <div>
+        <OtpTest />
       </div>
     </main>
   );

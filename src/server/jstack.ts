@@ -1,8 +1,9 @@
 import { auth } from "@/lib/auth";
+import { isAdmin, isStaff } from "@/lib/auth/permissions";
 import { getDb } from "@/lib/db/prisma";
 import { env } from "hono/adapter";
 import { HTTPException } from "hono/http-exception";
-import { jstack } from "jstack";
+import { InferMiddlewareOutput, jstack } from "jstack";
 
 interface Env {
   Bindings: {
@@ -39,6 +40,42 @@ const authMiddleware = j.middleware(async ({ c, next }) => {
   });
 });
 
+type InferredMiddleware = InferMiddlewareOutput<typeof baseMiddleware> &
+  InferMiddlewareOutput<typeof authMiddleware>;
+
+const requireUserMiddleware = j.middleware(async ({ c, ctx, next }) => {
+  const { authUser } = ctx as InferredMiddleware;
+
+  if (!authUser) {
+    throw new HTTPException(401, { message: "Unauthorized" });
+  }
+  return next();
+});
+
+const requireStaffMiddleware = j.middleware(async ({ c, ctx, next }) => {
+  const { authUser } = ctx as InferredMiddleware;
+
+  if (!authUser) {
+    throw new HTTPException(401, { message: "Unauthorized" });
+  }
+  if (!isStaff(authUser.role)) {
+    throw new HTTPException(403, { message: "Forbidden" });
+  }
+  return next();
+});
+
+const requireAdminMiddleware = j.middleware(async ({ c, ctx, next }) => {
+  const { authUser } = ctx as InferredMiddleware;
+
+  if (!authUser) {
+    throw new HTTPException(401, { message: "Unauthorized" });
+  }
+  if (!isAdmin(authUser.role)) {
+    throw new HTTPException(403, { message: "Forbidden" });
+  }
+  return next();
+});
+
 /**
  * Public (unauthenticated) procedures
  *
@@ -47,3 +84,9 @@ const authMiddleware = j.middleware(async ({ c, next }) => {
 export const publicProcedure = j.procedure.use(baseMiddleware);
 
 export const protectedProcedure = publicProcedure.use(authMiddleware);
+
+export const userProcedure = protectedProcedure.use(requireUserMiddleware);
+
+export const staffProcedure = protectedProcedure.use(requireStaffMiddleware);
+
+export const adminProcedure = protectedProcedure.use(requireAdminMiddleware);

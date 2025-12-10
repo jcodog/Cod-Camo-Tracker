@@ -1,6 +1,7 @@
 import { mailClient } from "./mail-client";
 import { renderPasswordResetEmail } from "./templates/password-reset-email";
 import { renderVerificationEmail } from "./templates/verification-email";
+import { renderVerificationOtpEmail } from "./templates/verification-otp-email";
 
 const senderEmail = process.env.MAILCHANNELS_FROM_EMAIL ?? "";
 const senderName = process.env.MAILCHANNELS_FROM_NAME ?? "Cod Camo Tracker";
@@ -68,4 +69,30 @@ export const sendPasswordResetEmail = async ({
       resetUrl: url,
     }),
   });
+};
+
+export const sendVerificationOtpEmail = async ({
+  email,
+  otp,
+  name,
+  type,
+}: {
+  email: string;
+  otp: string;
+  name?: string | null;
+  type: "email-verification" | "sign-in" | "forget-password";
+}) => {
+  try {
+    await sendEmail({
+      to: email,
+      subject: "Your verification code",
+      html: renderVerificationOtpEmail({
+        userName: name ?? undefined,
+        otp,
+        purpose: type,
+      }),
+    });
+  } catch (err) {
+    throw new Error(String(err));
+  }
 };
