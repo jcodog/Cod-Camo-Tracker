@@ -29,6 +29,7 @@ export function ProtectedNav() {
     role?: Role;
     name?: string;
     email?: string;
+    image?: string | null;
   } | null>(null);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export function ProtectedNav() {
   const role: Role = user?.role ?? "user";
   const userName = user?.name ?? "";
   const userEmail = user?.email ?? "";
+  const userImage = user?.image ?? null;
 
   const { navLinks, title, roleLinks } = useMemo(() => {
     const isAdminRoute = pathname.startsWith("/admin");
@@ -111,24 +113,24 @@ export function ProtectedNav() {
   }, [pathname, role]);
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 pb-3">
+    <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-3">
       <div className="flex flex-wrap items-center gap-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           {title}
         </h1>
-        <nav className="flex items-center gap-4 text-sm text-white/85">
+        <nav className="flex items-center gap-4 text-sm text-muted-foreground">
           {navLinks.map((item) =>
             item.type === "link" ? (
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative pb-1 transition hover:text-white after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition after:duration-200 hover:after:scale-x-100"
+                className="relative pb-1 transition hover:text-foreground after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-foreground after:transition after:duration-200 hover:after:scale-x-100"
               >
                 {item.label}
               </Link>
             ) : (
               <DropdownMenu key={item.label} modal={false}>
-                <DropdownMenuTrigger className="group relative pb-1 text-sm font-medium text-white/85 transition hover:text-white after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-white after:transition after:duration-200 hover:after:scale-x-100 focus:outline-none data-[state=open]:text-white">
+                <DropdownMenuTrigger className="group relative pb-1 text-sm font-medium text-muted-foreground transition hover:text-foreground after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-foreground after:transition after:duration-200 hover:after:scale-x-100 focus:outline-none data-[state=open]:text-foreground">
                   <div className="flex items-center gap-1">
                     <span>{item.label}</span>
                     <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
@@ -149,7 +151,12 @@ export function ProtectedNav() {
 
       <div className="flex items-center gap-3">
         <ThemeToggle />
-        <UserButton name={userName} email={userEmail} roleLinks={roleLinks} />
+        <UserButton
+          name={userName}
+          email={userEmail}
+          image={userImage}
+          roleLinks={roleLinks}
+        />
       </div>
     </header>
   );

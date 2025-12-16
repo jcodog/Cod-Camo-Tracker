@@ -5,8 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "JStack App",
-  description: "Created using JStack",
+  title: "Cod Camo Tracker",
+  description: "Track Call of Duty weapon camo challenges and progress.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
